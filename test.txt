@@ -1,0 +1,1 @@
+si n < 1 alors n = n + 1
