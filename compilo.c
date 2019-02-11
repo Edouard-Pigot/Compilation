@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "analyseur_lexical_flex.h"
+#include "analyseur_syntaxique.tab.h"
 
 FILE *yyin;
 extern char *yytext;   // déclaré dans analyseur_lexical
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
   if(affiche_lex == 1) {
     test_yylex( yyin );    
   }  
-  //yyparse();  
+  yyparse();  
   if( affiche_syntaxe_abstraite ) {
     //Affiche arbre abstrait
   }
