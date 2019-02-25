@@ -518,7 +518,7 @@ char *yytext;
  */ 
 #line 5 "analyseur_lexical.flex"
 /* code copié AU DÉBUT de l'analyseur */
-
+#include "syntabs.h"
 #include "analyseur_syntaxique.tab.h"
 #line 524 "analyseur_lexical_flex.c"
 #define YY_NO_INPUT 1
@@ -962,7 +962,7 @@ YY_RULE_SETUP
 case 31:
 YY_RULE_SETUP
 #line 49 "analyseur_lexical.flex"
-{return IDENTIF;}
+{yylval.idval = strdup(yytext); return IDENTIF;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP

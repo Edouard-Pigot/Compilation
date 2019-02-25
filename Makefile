@@ -5,12 +5,12 @@ LIBS = -lm
 CCFLAGS = -Wall -ggdb
 YACC = bison -d -t
 
-OBJ = analyseur_syntaxique.tab.o analyseur_lexical_flex.o util.o
+OBJ = analyseur_lexical_flex.o util.o syntabs.o affiche_arbre_abstrait.o analyseur_syntaxique.tab.o
 
 all: compilo
 
 compilo: compilo.c $(OBJ)
-	$(CC) -o $@ $^
+	$(CC) -o $@ compilo.c $(OBJ)
 
 analyseur_syntaxique.tab.c : analyseur_syntaxique.y
 	$(YACC) $<
@@ -28,3 +28,4 @@ clean:
 	- rm -f compilo
 	- rm -f test_yylex
 	- rm -f analyseur_lexical_flex.c
+	- rm -f analyseur_syntaxique.tab.*

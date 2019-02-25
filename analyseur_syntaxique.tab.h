@@ -78,7 +78,26 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+
+union YYSTYPE
+{
+#line 14 "analyseur_syntaxique.y" /* yacc.c:1909  */
+ int nval;
+	char* idval;
+	n_l_instr* nlinstr; 
+	n_instr* ninstr;
+	n_exp* nexp;
+	n_l_exp* nlexp;
+	n_var* nvar;
+	n_l_dec* nldec;
+	n_dec* ndec;
+	n_prog* nprog;
+	n_appel* nappel;
+
+#line 98 "analyseur_syntaxique.tab.h" /* yacc.c:1909  */
+};
+
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
