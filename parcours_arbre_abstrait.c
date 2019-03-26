@@ -2,6 +2,7 @@
 #include "syntabs.h"
 #include "util.h"
 #include "tabsymboles.h"
+#include "code3a.h"
 
 void parcours_n_prog(n_prog *n);
 void parcours_l_instr(n_l_instr *n);
@@ -13,18 +14,18 @@ void parcours_instr_appel(n_instr *n);
 void parcours_instr_retour(n_instr *n);
 void parcours_instr_ecrire(n_instr *n);
 void parcours_l_exp(n_l_exp *n);
-void parcours_exp(n_exp *n);
-void parcours_varExp(n_exp *n);
-void parcours_opExp(n_exp *n);
-void parcours_intExp(n_exp *n);
-void parcours_lireExp(n_exp *n);
+operande* parcours_exp(n_exp *n);
+operande* parcours_varExp(n_exp *n);
+operande* parcours_opExp(n_exp *n);
+operande* parcours_intExp(n_exp *n);
+operande* parcours_lireExp(n_exp *n);
 void parcours_appelExp(n_exp *n);
 void parcours_l_dec(n_l_dec *n);
 void parcours_dec(n_dec *n);
 void parcours_foncDec(n_dec *n);
 void parcours_varDec(n_dec *n);
 void parcours_tabDec(n_dec *n);
-void parcours_var(n_var *n);
+operande* parcours_var(n_var *n);
 void parcours_var_simple(n_var *n);
 void parcours_var_indicee(n_var *n);
 void parcours_appel(n_appel *n);
@@ -34,11 +35,13 @@ int nb_argument(n_l_exp* liste);
 extern int portee;
 extern int adresseLocaleCourante;
 extern int adresseArgumentCourant;
+extern code3a_ code3a;
 
 /*-------------------------------------------------------------------------*/
 
 void parcours_n_prog(n_prog *n)
 {
+	code3a_init();
 	portee = P_VARIABLE_GLOBALE;
 	parcours_l_dec(n->variables);
 	parcours_l_dec(n->fonctions); 
@@ -93,8 +96,9 @@ void parcours_instr_tantque(n_instr *n)
 
 void parcours_instr_affect(n_instr *n)
 {
-  parcours_var(n->u.affecte_.var);
-  parcours_exp(n->u.affecte_.exp);
+  operande* var = parcours_var(n->u.affecte_.var);
+  operande* exp = parcours_exp(n->u.affecte_.exp);
+  code3a_ajoute_instruction(assign, exp, NULL, var, NULL);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -120,7 +124,7 @@ void parcours_appel(n_appel *n)
 {
   int nbargument = nb_argument(n->args);
   if (rechercheExecutable(n->fonction) == -1){
-	erreur("fonction deja declare");
+	erreur("fonction pas declare");
   }
   else if ( nbargument != tabsymboles.tab[rechercheExecutable(n->fonction)].complement){
 	erreur("nb argument pas bon");		  
@@ -132,14 +136,16 @@ void parcours_appel(n_appel *n)
 
 void parcours_instr_retour(n_instr *n)
 {
-  parcours_exp(n->u.retour_.expression);
+  operande* retour = parcours_exp(n->u.retour_.expression);
+  code3a_ajoute_instruction(func_val_ret, retour, NULL, NULL, NULL);
 }
 
 /*-------------------------------------------------------------------------*/
 
 void parcours_instr_ecrire(n_instr *n)
 {
-  parcours_exp(n->u.ecrire_.expression);
+  operande* operande = parcours_exp(n->u.ecrire_.expression);
+  code3a_ajoute_instruction(sys_write, operande, NULL, NULL, NULL);
 }
 
 /*-------------------------------------------------------------------------*/
@@ -154,42 +160,91 @@ void parcours_l_exp(n_l_exp *n)
 
 /*-------------------------------------------------------------------------*/
 
-void parcours_exp(n_exp *n)
+operande* parcours_exp(n_exp *n)
 {
-  if(n->type == varExp) parcours_varExp(n);
-  else if(n->type == opExp) parcours_opExp(n);
-  else if(n->type == intExp) parcours_intExp(n);
+  operande* operande;
+  if(n->type == varExp) operande = parcours_varExp(n);
+  else if(n->type == opExp) operande = parcours_opExp(n);
+  else if(n->type == intExp) operande = parcours_intExp(n);
   else if(n->type == appelExp) parcours_appelExp(n);
-  else if(n->type == lireExp) parcours_lireExp(n);
+  else if(n->type == lireExp) operande = parcours_lireExp(n);
+  return operande;
 }
 
 /*-------------------------------------------------------------------------*/
 
-void parcours_varExp(n_exp *n)
+operande* parcours_varExp(n_exp *n)
 {
-  parcours_var(n->u.var);
+  operande* operande;
+  operande = parcours_var(n->u.var);
+  return operande;
 }
 
 /*-------------------------------------------------------------------------*/
-void parcours_opExp(n_exp *n)
-{
+operande* parcours_opExp(n_exp *n)
+{	
+  operande*  operande1 = NULL;
+  operande*  operande2 = NULL;
   if( n->u.opExp_.op1 != NULL ) {
-    parcours_exp(n->u.opExp_.op1);
+    operande1= parcours_exp(n->u.opExp_.op1);
   }
   if( n->u.opExp_.op2 != NULL ) {
-    parcours_exp(n->u.opExp_.op2);
+    operande2 = parcours_exp(n->u.opExp_.op2);
+  }
+  operande*  temporaire = code3a_new_temporaire();
+  instrcode operateur;
+
+  switch (n->u.opExp_.op)
+  {
+    case plus :
+      operateur = arith_add;
+      break;
+    case moins: 
+      operateur = arith_sub;
+      break;
+    case fois: 
+      operateur = arith_mult;
+      break;
+    case divise: 
+      operateur = arith_div;
+      break;
+    case egal: 
+      operateur = jump_if_equal;
+      break;
+    case inferieur: 
+      operateur = jump_if_less;
+      break;
+    case ou: 
+      operateur = jump_if_equal;
+      break;
+    case et: 
+      operateur = jump_if_equal;
+      break;
+    case non: 
+      operateur = jump_if_equal;
+      break;
   }
 
+  code3a_ajoute_instruction(operateur,operande1,operande2,temporaire,NULL);
+  return temporaire;
 }
 
 /*-------------------------------------------------------------------------*/
 
-void parcours_intExp(n_exp *n)
-{}
+operande* parcours_intExp(n_exp *n)
+{
+  operande* constante;
+  constante = code3a_new_constante(n->u.entier);
+  return constante;
+}
 
 /*-------------------------------------------------------------------------*/
-void parcours_lireExp(n_exp *n)
-{}
+operande* parcours_lireExp(n_exp *n)
+{
+  operande* temporaire = code3a_new_temporaire();
+  code3a_ajoute_instruction(sys_read, NULL, NULL, temporaire, NULL);
+  return temporaire;
+}
 
 /*-------------------------------------------------------------------------*/
 
@@ -244,12 +299,14 @@ void parcours_foncDec(n_dec *n)
 		ajouteIdentificateur(n->nom,portee,T_FONCTION,0, nbparam);
 		tabsymboles.base++;
 		entreeFonction();
+		code3a_ajoute_etiquette(n->nom);
+		code3a_ajoute_instruction(func_begin, NULL, NULL, NULL, NULL);
 		parcours_l_dec(n->u.foncDec_.param);
 		portee = P_VARIABLE_LOCALE;
 		parcours_l_dec(n->u.foncDec_.variables);
-		portee = P_VARIABLE_GLOBALE;
 		parcours_instr(n->u.foncDec_.corps);
 		sortieFonction(1);
+		code3a_ajoute_instruction(func_end, NULL, NULL, NULL, NULL);
 	}
 	else 
 		erreur("fonction deja declare");
@@ -259,15 +316,17 @@ void parcours_foncDec(n_dec *n)
 
 void parcours_varDec(n_dec *n)
 {
-  if (rechercheExecutable(n->nom) == -1) { 
+  if (rechercheDeclarative(n->nom) == -1) { 
     if (portee == P_VARIABLE_GLOBALE)
     {
+		code3a_ajoute_instruction(alloc, code3a_new_constante(1), code3a_new_var(n->nom, portee, adresseLocaleCourante), NULL, NULL);
         ajouteIdentificateur(n->nom, portee, T_ENTIER, adresseLocaleCourante, 1);
         tabsymboles.base++;
         adresseLocaleCourante = adresseLocaleCourante +4 ;
     }
     else if (portee == P_VARIABLE_LOCALE)
     {
+		code3a_ajoute_instruction(alloc, code3a_new_constante(1), code3a_new_var(n->nom, portee, adresseLocaleCourante), NULL, NULL);
         ajouteIdentificateur(n->nom, portee, T_ENTIER, adresseLocaleCourante, 1);
         adresseLocaleCourante = adresseLocaleCourante +4  ;
     }
@@ -277,7 +336,7 @@ void parcours_varDec(n_dec *n)
       adresseArgumentCourant = adresseArgumentCourant +4;
     }
   }
-  else erreur("Variable non declaré");
+  else erreur("Variable deja declaré");
 }
 
 /*-------------------------------------------------------------------------*/
@@ -297,14 +356,17 @@ void parcours_tabDec(n_dec *n)
 
 /*-------------------------------------------------------------------------*/
 
-void parcours_var(n_var *n)
+operande* parcours_var(n_var *n)
 {
+  operande* operande;	
   if(n->type == simple) {
     parcours_var_simple(n);
   }
   else if(n->type == indicee) {
     parcours_var_indicee(n);
   }
+  operande = code3a_new_var(n->nom, portee, tabsymboles.tab[rechercheExecutable(n->nom)].adresse);
+  return operande;
 }
 
 /*-------------------------------------------------------------------------*/
@@ -313,6 +375,8 @@ void parcours_var_simple(n_var *n)
 {
   if (rechercheExecutable(n->nom) == -1) 
 	  erreur("Variable non declaré");
+   else if (tabsymboles.tab[rechercheDeclarative(n->nom)].type == T_TABLEAU_ENTIER) 
+	  erreur("Tableau non indicee");
 }
 
 /*-------------------------------------------------------------------------*/
@@ -321,7 +385,7 @@ void parcours_var_indicee(n_var *n)
 {
   if (rechercheExecutable(n->nom) == -1) 
 	  erreur("Variable non declaré");
-  else if (tabsymboles.tab[rechercheExecutable(n->nom)].type == T_ENTIER) 
-	  erreur("Ce n'est pas un tableau");
+  else if (tabsymboles.tab[rechercheDeclarative(n->nom)].type == T_ENTIER) 
+	  erreur("la variable n'est pas un tableau");
 }
 
