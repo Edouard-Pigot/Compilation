@@ -11,6 +11,7 @@ void affiche_instr_affect(n_instr *n);
 void affiche_instr_appel(n_instr *n);
 void affiche_instr_retour(n_instr *n);
 void affiche_instr_ecrire(n_instr *n);
+void affiche_instr_pour(n_instr *n);
 void affiche_l_exp(n_l_exp *n);
 void affiche_exp(n_exp *n);
 void affiche_varExp(n_exp *n);
@@ -67,6 +68,7 @@ void affiche_instr(n_instr *n)
     else if(n->type == appelInst) affiche_instr_appel(n);
     else if(n->type == retourInst) affiche_instr_retour(n);
     else if(n->type == ecrireInst) affiche_instr_ecrire(n);
+	else if(n->type == pourInst) affiche_instr_pour(n);
   }
 }
 
@@ -94,6 +96,23 @@ void affiche_instr_tantque(n_instr *n)
 
   affiche_exp(n->u.tantque_.test);
   affiche_instr(n->u.tantque_.faire);
+  affiche_balise_fermante(fct, trace_abs);
+}
+
+/*-------------------------------------------------------------------------*/
+
+void affiche_instr_pour(n_instr *n)
+{
+  char *fct = "instr_pour";
+  affiche_balise_ouvrante(fct, trace_abs);
+
+  affiche_varDec(n->u.pour_.init);
+  
+  affiche_exp(n->u.pour_.test);  
+  
+  affiche_instr(n->u.pour_.faire);
+  
+  affiche_var(n->u.pour_.affect);
   affiche_balise_fermante(fct, trace_abs);
 }
 

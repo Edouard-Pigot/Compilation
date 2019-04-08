@@ -1,0 +1,6 @@
+0000           : alloc -1160518336 v$tab		; $tab
+0001 >   fmain : fbegin
+0002           : v$tab[4] = 4
+0003           : t0 = 4
+0004           : write v$tab[t0]
+0005           : fend

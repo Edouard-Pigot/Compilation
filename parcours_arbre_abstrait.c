@@ -11,6 +11,7 @@ void parcours_l_instr(n_l_instr *n);
 void parcours_instr(n_instr *n);
 void parcours_instr_si(n_instr *n);
 void parcours_instr_tantque(n_instr *n);
+void parcours_instr_pour(n_instr *n);
 void parcours_instr_affect(n_instr *n);
 void parcours_instr_appel(n_instr *n);
 void parcours_instr_retour(n_instr *n);
@@ -51,10 +52,10 @@ void parcours_n_prog(n_prog *n)
 	parcours_l_dec(n->fonctions); 
 	 
 	if(rechercheExecutable("main") == -1) {
-	  erreur("Il n'y a pas de main");
+	  erreur("Pas de fonction main");
 	}
     if(tabsymboles.tab[rechercheExecutable("main")].complement !=  0) {
-	  erreur("Main est une fonction sans argument");
+	  erreur("Main ne prend pas d'argument");
 	}
 }
 
@@ -114,6 +115,26 @@ void parcours_instr_tantque(n_instr *n)
   
   code3a_ajoute_etiquette(debut->u.oper_nom);
   
+  operande* pour = parcours_exp(n->u.pour_.test);
+
+  code3a_ajoute_instruction(jump_if_equal, pour, code3a_new_constante(0), fin, NULL);
+
+  parcours_instr(n->u.pour_.faire);
+
+  code3a_ajoute_instruction(jump, debut, NULL, NULL, NULL);
+
+  code3a_ajoute_etiquette(fin->u.oper_nom);
+  }
+
+/*-------------------------------------------------------------------------*/
+
+void parcours_instr_pour(n_instr *n)
+{
+  operande* debut = code3a_new_etiquette_auto();
+  operande* fin = code3a_new_etiquette_auto();
+  
+  code3a_ajoute_etiquette(debut->u.oper_nom);
+  
   operande* tantque = parcours_exp(n->u.tantque_.test);
 
   code3a_ajoute_instruction(jump_if_equal, tantque, code3a_new_constante(0), fin, NULL);
@@ -124,8 +145,8 @@ void parcours_instr_tantque(n_instr *n)
 
   code3a_ajoute_etiquette(fin->u.oper_nom);
   }
-
-/*-------------------------------------------------------------------------*/
+  
+/*-------------------------------------------------------------------------*/  
 
 void parcours_instr_affect(n_instr *n)
 {
@@ -178,13 +199,13 @@ int nb_argument(n_l_exp* liste){
 
 operande* parcours_appel(n_appel *n)
 {
-  code3a_ajoute_instruction(alloc, code3a_new_constante(1), NULL, NULL,"alloue de la place pour la valeur de retour");
+  code3a_ajoute_instruction(alloc, code3a_new_constante(1), NULL, NULL,"Allocation place pour valeur retour");
   int nbargument = nb_argument(n->args);
   if (rechercheExecutable(n->fonction) == -1){
-	erreur("fonction pas declare");
+	erreur("Fonction non declarée");
   }
   else if ( nbargument != tabsymboles.tab[rechercheExecutable(n->fonction)].complement){
-	erreur("nb argument pas bon");		  
+	erreur("Nombre arguments incorrect");		  
   }
   //parcours_l_exp(n->args);
   operande* etiquette = code3a_new_temporaire();
@@ -196,8 +217,8 @@ operande* parcours_appel(n_appel *n)
 void parcours_instr_retour(n_instr *n)
 {
   operande* retour = parcours_exp(n->u.retour_.expression);
-  code3a_ajoute_instruction(func_val_ret, retour, NULL, NULL, "sauvegarder la valeur de retour");
-  code3a_ajoute_instruction(func_end, NULL, NULL, NULL, "terminer l'exécution de la fonction");
+  code3a_ajoute_instruction(func_val_ret, retour, NULL, NULL, "Sauvegarder valeur retour");
+  code3a_ajoute_instruction(func_end, NULL, NULL, NULL, "Terminer exécution fonction");
 }
 
 /*-------------------------------------------------------------------------*/
@@ -301,20 +322,14 @@ operande* parcours_opExp(n_exp *n)
       operateur = jump_if_equal;
       break;
   }
-  
   if((n->u.opExp_.op) < egal) {
     operande* temporaire;
     temporaire = code3a_new_temporaire();
     code3a_ajoute_instruction(operateur, operande1, operande2, temporaire, NULL);
     return temporaire;
   }
-
-  
   operande *exp = code3a_new_etiquette_auto();
-  
-  
   operande* temporaire = code3a_new_temporaire();
- 
   code3a_ajoute_instruction(assign, code3a_new_constante(-1), NULL, temporaire, NULL);
   code3a_ajoute_instruction(operateur,operande1,operande2,exp,NULL);
   code3a_ajoute_instruction(assign, code3a_new_constante(0), NULL, temporaire, NULL);
@@ -395,11 +410,9 @@ void parcours_foncDec(n_dec *n)
 		ajouteIdentificateur(n->nom,P_VARIABLE_GLOBALE,T_FONCTION,0, nbparam);
 		tabsymboles.base++;
 		entreeFonction();
-		
 		char* nom = malloc(102*sizeof(char));
 		sprintf (nom,"f%s",n->nom);
 		code3a_ajoute_etiquette(nom);
-		
 		code3a_ajoute_instruction(func_begin, NULL, NULL, NULL, NULL);
 		parcours_l_dec(n->u.foncDec_.param);
 		portee = P_VARIABLE_LOCALE;
@@ -409,7 +422,7 @@ void parcours_foncDec(n_dec *n)
 		code3a_ajoute_instruction(func_end, NULL, NULL, NULL, NULL);
 	}
 	else 
-		erreur("fonction deja declare");
+		erreur("fonction déjà declarée");
 }
 
 /*-------------------------------------------------------------------------*/
@@ -436,7 +449,7 @@ void parcours_varDec(n_dec *n)
       adresseArgumentCourant = adresseArgumentCourant +4;
     }
   }
-  else erreur("Variable deja declaré");
+  else erreur("Variable deja declarée");
 }
 
 /*-------------------------------------------------------------------------*/
@@ -459,15 +472,12 @@ void parcours_tabDec(n_dec *n)
 
 operande* parcours_var(n_var *n)
 {
-	
   operande* operande;	
   if(n->type == simple) {
     operande = parcours_var_simple(n);
-	
   }
   else if(n->type == indicee) {
 	operande = parcours_var_indicee(n);
-	
   }
   return operande;
 }
@@ -477,9 +487,9 @@ operande* parcours_var(n_var *n)
 operande* parcours_var_simple(n_var *n)
 {
   if (rechercheExecutable(n->nom) == -1) 
-	  erreur("Variable non declaré");
+	  erreur("Variable non declarée");
   else if (tabsymboles.tab[rechercheExecutable(n->nom)].type == T_TABLEAU_ENTIER) 
-	  erreur("Tableau non indicee");
+	  erreur("Tableau non indicé");
   operande* operande = code3a_new_var(n->nom, tabsymboles.tab[rechercheExecutable(n->nom)].portee, tabsymboles.tab[rechercheExecutable(n->nom)].adresse);
   return operande;
 }
@@ -488,13 +498,11 @@ operande* parcours_var_simple(n_var *n)
 
 operande* parcours_var_indicee(n_var *n)
 {
-	
   if (rechercheExecutable(n->nom) == -1) 
-	  erreur("Variable non declaré");
+	  erreur("Variable non declarée");
   else if (tabsymboles.tab[rechercheExecutable(n->nom)].type == T_ENTIER) {
-	  erreur("la variable n'est pas un tableau");
+	  erreur("Ce n'est pas un tableau");
   }
-  
   operande* var = code3a_new_var(n->nom, tabsymboles.tab[rechercheExecutable(n->nom)].portee, tabsymboles.tab[rechercheExecutable(n->nom)].adresse);
   operande* indice = parcours_exp( n->u.indicee_.indice );
   var->u.oper_var.oper_indice = indice;

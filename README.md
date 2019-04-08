@@ -1,2 +1,0 @@
-# Compilation
-TP de compilation

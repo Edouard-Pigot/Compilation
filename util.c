@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "symboles.h"
+/*#include "analyseur_syntaxique_yacc.tab.h"*/
 #include "util.h"
 #include "analyseur_lexical_flex.h"
 
@@ -145,10 +146,15 @@ void affiche_xml_texte( char *texte_, int trace_xml ) {
  ******************************************************************************/
 void affiche_element(char *fct_, char *texte_, int trace_xml) {
   if(trace_xml) {
-    indent(); 
-    fprintf (stdout, "<%s>", fct_ );
-    affiche_texte( texte_, trace_xml );
-    fprintf (stdout, "</%s>\n", fct_ );
+    indent();
+    if(texte_){
+      fprintf (stdout, "<%s>", fct_ );
+      affiche_texte( texte_, trace_xml );
+      fprintf (stdout, "</%s>\n", fct_ );
+    } 
+    else{
+      fprintf (stdout, "<%s/>\n", fct_ );
+    }
   }
 }
 
@@ -163,3 +169,47 @@ void affiche_feuille(int uc, int trace_xml) {
   nom_token( uc, nom, valeur );
   affiche_element( nom, valeur, trace_xml );
 }
+
+
+/*******************************************************************************
+ * Fonction utile pour faire avancer la tête de lecture quand un symbole 
+ * terminal c dans une règle de production de la grammaire se retrouve sous la
+ * tête de lecture uc. Attention, uc est un pointeur vers l'unité courante de
+ * votre analyseur. Il peut être modifié avec un appel à yylex si la fonction
+ * réussit la reconnaissance du symbole (c-à-d si *uc == c). Dans ce cas, la 
+ * fonction affichera aussi l'élément XML feuille correspondant au terminal 
+ * reconnu. En cas d'échec, affiche un message d'erreur informatif. Si la valeur 
+ * de trace_xml est zéro, rien ne sera affiché (permet de désactiver l'affichage 
+ * de l'arbre syntaxique)
+ ******************************************************************************/
+void consommer( int c, int *uc, int trace_xml ) {
+  if( *uc == c ){
+    affiche_feuille(*uc, trace_xml);
+    *uc = yylex(); /* consommer le caractère */
+  }
+  else { /* Message d'erreur attendu/trouvé */
+    char nomC[100], valeurC[100], 
+         nomUC[100], valeurUC[100], messageErreur[250];  
+    nom_token( c, nomC, valeurC );
+    nom_token( *uc, nomUC, valeurUC );    
+    sprintf( messageErreur, "%s '%s' attendu, %s '%s' trouvé", 
+             nomC, valeurC, nomUC, valeurUC );
+    erreur( messageErreur );
+  }
+}
+
+/*******************************************************************************
+ * Fonction auxiliaire appelée par le compilo en mode -l pour tester l'analyseur
+ * lexical et, étant donné un programme en entrée, afficher la liste des tokens.
+ ******************************************************************************/
+void test_yylex_internal(FILE *yyin) {
+  int uniteCourante;
+  char nom[100];
+  char valeur[100];  
+  do {
+    uniteCourante = yylex(); 
+    nom_token( uniteCourante, nom, valeur );
+    printf("%s\t%s\t%s\n", yytext, nom, valeur);
+  } while (uniteCourante != 0);
+}
+

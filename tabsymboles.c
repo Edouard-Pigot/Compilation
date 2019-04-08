@@ -49,8 +49,8 @@ void sortieFonction(int trace_tabsymb){
   *               P_VARIABLE_LOCALE
   * @param type Constante parmi T_ENTIER, T_TABLEAU_ENTIER et T_FONCTION
   * @param adresse Nombre d'octets de décalage par rapport à la base de la zone
-  *                mémoire des variables ($fp pour locales/arguments, .data pour 
-  *                globales)
+  *                mémoire des variables (base de la trame de pile pour locales 
+  *                et arguments, zone de données pour globales)
   * @param complement Nombre de paramètres d'une fonction OU nombre de cases 
   *                   d'un tableau. Indéfini (0) quand type=T_ENTIER.
   * @return Numéro de ligne de l'entrée qui vient d'être rajoutée
@@ -98,15 +98,16 @@ int rechercheExecutable(char *identif)
 /*-------------------------------------------------------------------------*/
 
 /**
-  * Recherche si un identificateur est présent dans la table LOCALE
-  * Cette fonction doit être utilisée pour s'assurer qu'il n'y a pas deux
-  * identificateurs avec le même lors d'une DÉCLARATION d'un identificateur.
+  * Recherche si un identificateur est présent dans la table de la portée la 
+  * plus proche. Cette fonction doit être utilisée pour s'assurer qu'il n'y a 
+  * pas deux identificateurs avec le même lors d'une DÉCLARATION d'un 
+  * identificateur.
   * @param identif Le nom de variable ou fonction que l'on cherche
   * @return Si oui, renvoie le numéro de ligne dans tabsymboles, si non -1  
   */
 int rechercheDeclarative(char *identif) {
   int i;
-  for(i = tabsymboles.base; i < tabsymboles.sommet; i++){
+  for(i = tabsymboles.sommet - 1; i >= tabsymboles.base; i--){
     if(!strcmp(identif, tabsymboles.tab[i].identif))
       return i;
   }

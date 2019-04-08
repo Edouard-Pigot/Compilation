@@ -35,7 +35,7 @@ MYCOMPILO="../compilo"
 
 # 2) DÉCOMMENTEZ + MODIFIEZ LES COMMANDES POUR GÉNÉRER LES DIFFÉRENTES SORTIES
 
-EXITONFAIL=1                          # mettre à zéro pour continuer après erreurs
+EXITONFAIL=0                         # mettre à zéro pour continuer après erreurs
 VERBOSE=1                             # mettre =1 pour afficher les détails
 declare -A MYCOMPILOV                 # déclare un tableau (ne pas toucher)
 MYCOMPILOV["lex"]="${MYCOMPILO} -l"   # exécuter l'analyseur lexical

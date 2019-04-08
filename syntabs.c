@@ -104,6 +104,17 @@ n_instr *cree_n_instr_tantque(n_exp *test, n_instr *faire)
   return n;
 }
 
+n_instr *cree_n_instr_pour(n_instr *init, n_exp *test, n_instr *faire, n_instr *affect)
+{
+  n_instr *n = malloc(sizeof(n_instr));
+  n->type = pourInst;
+  n->u.pour_.init = init;
+  n->u.pour_.test = test;
+  n->u.pour_.faire = faire;
+  n->u.pour_.affect = affect;
+  return n;
+}
+
 n_instr *cree_n_instr_affect(n_var *var, n_exp *exp)
 {
   n_instr *n = malloc(sizeof(n_instr));

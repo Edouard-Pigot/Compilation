@@ -47,24 +47,18 @@ prefident {lettre}|"_"|"$"
 "retour" {return RETOUR;}
 "lire" {return LIRE;}
 "ecrire" {return ECRIRE;}
+"pour" {return POUR;}
 {prefident}{alphanum}* {yylval.idval = strdup(yytext); return IDENTIF;}
 "," {return VIRGULE;}
 %%
-
-/* Code copié À LA FIN de l'analyseyur */
 
 int yywrap(){
   return 1;
 }
 
-/***********************************************************************
- * Fonction auxiliaire appelée par l'analyseur syntaxique pour 
- * afficher des messages d'erreur et l'arbre XML 
- **********************************************************************/
-
-char *tableMotsClefs[] = {"si", "alors", "sinon", "tantque", "faire", "entier", "retour", "lire", "ecrire"};
-int codeMotClefs[] = {SI, ALORS, SINON, TANTQUE, FAIRE, ENTIER, RETOUR, LIRE, ECRIRE};
-int nbMotsClefs = 9;
+char *tableMotsClefs[] = {"si", "alors", "sinon", "tantque", "faire", "entier", "retour", "lire", "ecrire", "pour"};
+int codeMotClefs[] = {SI, ALORS, SINON, TANTQUE, FAIRE, ENTIER, RETOUR, LIRE, ECRIRE, POUR};
+int nbMotsClefs = 10;
 
 void nom_token( int token, char *nom, char *valeur ) {
   int i;    
