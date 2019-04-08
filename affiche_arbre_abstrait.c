@@ -36,7 +36,6 @@ void affiche_n_prog(n_prog *n)
 {
   char *fct = "prog";
   affiche_balise_ouvrante(fct, trace_abs);
-
   affiche_l_dec(n->variables);
   affiche_l_dec(n->fonctions); 
   affiche_balise_fermante(fct, trace_abs);
@@ -253,6 +252,10 @@ void affiche_l_dec(n_l_dec *n)
     affiche_l_dec(n->queue);
     affiche_balise_fermante(fct, trace_abs);
   }
+  else{
+    affiche_balise_ouvrante(fct, trace_abs); // CORRIGÉ le 04/04/2019
+    affiche_balise_fermante(fct, trace_abs); // Affiche une liste vide
+  }
 }
 
 /*-------------------------------------------------------------------------*/
@@ -278,9 +281,9 @@ void affiche_dec(n_dec *n)
 void affiche_foncDec(n_dec *n)
 {
   char *fct = "foncDec";
-  affiche_balise_ouvrante(fct, trace_abs);
-  //  affiche_xml_texte( n->nom, trace_abs );
-  affiche_l_dec(n->u.foncDec_.param);
+  affiche_balise_ouvrante(fct, trace_abs); 
+  affiche_xml_texte( n->nom, trace_abs );  // CORRIGÉ le 04/04/2019
+  affiche_l_dec(n->u.foncDec_.param);  
   affiche_l_dec(n->u.foncDec_.variables);
   affiche_instr(n->u.foncDec_.corps);
   affiche_balise_fermante(fct, trace_abs);

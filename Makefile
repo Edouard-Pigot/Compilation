@@ -5,7 +5,7 @@ LIBS = -lm
 CCFLAGS = -Wall -ggdb
 YACC = bison -d -t
 
-OBJ = analyseur_lexical_flex.o util.o syntabs.o affiche_arbre_abstrait.o analyseur_syntaxique.tab.o tabsymboles.o parcours_arbre_abstrait.o
+OBJ = analyseur_lexical_flex.o util.o syntabs.o affiche_arbre_abstrait.o analyseur_syntaxique.tab.o tabsymboles.o parcours_arbre_abstrait.o code3a.o c3a2nasm.o
 
 all: compilo
 

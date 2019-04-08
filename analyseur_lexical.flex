@@ -15,8 +15,9 @@ lettre [a-zA-Z]
 chiffre [0-9]
 alphanum {lettre}|{chiffre}|"_"|"$"
 prefident {lettre}|"_"|"$"
+
 %%
-[0-9]+ { return NOMBRE; }
+[0-9]+ {yylval.nval = atoi(yytext); return NOMBRE; }
 "\n"
 "\t"
 " "
@@ -103,3 +104,4 @@ void nom_token( int token, char *nom, char *valeur ) {
     }
   }  
 }
+

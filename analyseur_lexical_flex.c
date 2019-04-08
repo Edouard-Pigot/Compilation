@@ -738,7 +738,7 @@ YY_DECL
 		}
 
 	{
-#line 18 "analyseur_lexical.flex"
+#line 19 "analyseur_lexical.flex"
 
 #line 744 "analyseur_lexical_flex.c"
 
@@ -809,169 +809,169 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 19 "analyseur_lexical.flex"
-{ return NOMBRE; }
+#line 20 "analyseur_lexical.flex"
+{yylval.nval = atoi(yytext); return NOMBRE; }
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 20 "analyseur_lexical.flex"
+#line 21 "analyseur_lexical.flex"
 
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 21 "analyseur_lexical.flex"
+#line 22 "analyseur_lexical.flex"
 
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 22 "analyseur_lexical.flex"
+#line 23 "analyseur_lexical.flex"
 
 	YY_BREAK
 case 5:
 /* rule 5 can match eol */
 YY_RULE_SETUP
-#line 23 "analyseur_lexical.flex"
+#line 24 "analyseur_lexical.flex"
 
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 24 "analyseur_lexical.flex"
+#line 25 "analyseur_lexical.flex"
 {return POINT_VIRGULE;}                    
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 25 "analyseur_lexical.flex"
+#line 26 "analyseur_lexical.flex"
 {return PLUS;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 26 "analyseur_lexical.flex"
+#line 27 "analyseur_lexical.flex"
 {return MOINS;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 27 "analyseur_lexical.flex"
+#line 28 "analyseur_lexical.flex"
 {return FOIS;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 28 "analyseur_lexical.flex"
+#line 29 "analyseur_lexical.flex"
 {return DIVISE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 29 "analyseur_lexical.flex"
+#line 30 "analyseur_lexical.flex"
 {return PARENTHESE_OUVRANTE;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 30 "analyseur_lexical.flex"
+#line 31 "analyseur_lexical.flex"
 {return PARENTHESE_FERMANTE;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 31 "analyseur_lexical.flex"
+#line 32 "analyseur_lexical.flex"
 {return CROCHET_OUVRANT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 32 "analyseur_lexical.flex"
+#line 33 "analyseur_lexical.flex"
 {return CROCHET_FERMANT;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 33 "analyseur_lexical.flex"
+#line 34 "analyseur_lexical.flex"
 {return ACCOLADE_OUVRANTE;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 34 "analyseur_lexical.flex"
+#line 35 "analyseur_lexical.flex"
 {return ACCOLADE_FERMANTE;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 35 "analyseur_lexical.flex"
+#line 36 "analyseur_lexical.flex"
 {return EGAL;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 36 "analyseur_lexical.flex"
+#line 37 "analyseur_lexical.flex"
 {return INFERIEUR;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 37 "analyseur_lexical.flex"
+#line 38 "analyseur_lexical.flex"
 {return ET;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 38 "analyseur_lexical.flex"
+#line 39 "analyseur_lexical.flex"
 {return OU;}
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 39 "analyseur_lexical.flex"
+#line 40 "analyseur_lexical.flex"
 {return NON;}
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 40 "analyseur_lexical.flex"
+#line 41 "analyseur_lexical.flex"
 {return SI;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 41 "analyseur_lexical.flex"
+#line 42 "analyseur_lexical.flex"
 {return ALORS;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 42 "analyseur_lexical.flex"
+#line 43 "analyseur_lexical.flex"
 {return SINON;}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 43 "analyseur_lexical.flex"
+#line 44 "analyseur_lexical.flex"
 {return TANTQUE;}
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 44 "analyseur_lexical.flex"
+#line 45 "analyseur_lexical.flex"
 {return FAIRE;}
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 45 "analyseur_lexical.flex"
+#line 46 "analyseur_lexical.flex"
 {return ENTIER;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 46 "analyseur_lexical.flex"
+#line 47 "analyseur_lexical.flex"
 {return RETOUR;}
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 47 "analyseur_lexical.flex"
+#line 48 "analyseur_lexical.flex"
 {return LIRE;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 48 "analyseur_lexical.flex"
+#line 49 "analyseur_lexical.flex"
 {return ECRIRE;}
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 49 "analyseur_lexical.flex"
+#line 50 "analyseur_lexical.flex"
 {yylval.idval = strdup(yytext); return IDENTIF;}
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 50 "analyseur_lexical.flex"
+#line 51 "analyseur_lexical.flex"
 {return VIRGULE;}
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 51 "analyseur_lexical.flex"
+#line 52 "analyseur_lexical.flex"
 ECHO;
 	YY_BREAK
 #line 978 "analyseur_lexical_flex.c"
@@ -1950,7 +1950,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 51 "analyseur_lexical.flex"
+#line 52 "analyseur_lexical.flex"
 
 
 /* Code copié À LA FIN de l'analyseyur */
@@ -2006,4 +2006,5 @@ void nom_token( int token, char *nom, char *valeur ) {
     }
   }  
 }
+
 
